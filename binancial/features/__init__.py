@@ -1,0 +1,1 @@
+from .trend_count import trend_count
