@@ -4,7 +4,7 @@
   <br>
 </h1>
 
-<h3 align="center">New Repository Template</h3>
+<h3 align="center">Binancial</h3>
 
 <!-- Replace the title of the repository -->
 
@@ -18,7 +18,7 @@
 
 ## Description
 
-The template for creating new repositories.
+A set of trading desk capabilities for Binance API. 
 
 <!-- This section provides a high-level overview for the repo -->
 
