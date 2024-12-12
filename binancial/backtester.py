@@ -22,8 +22,6 @@ class BackTester:
         import tqdm
 
         from .accountant import Accountant
-        from .strategies.mean_strategy import mean_strategy
-        from .plots.position_timeline import position_timeline
 
         # a list of dataframes, one per test
         self.account_dfs = []
