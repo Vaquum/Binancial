@@ -47,7 +47,10 @@ class BackTester:
                     action = 'buy'
 
                 else:
-                    action = strategy(data, accountant, price_usdt, timestamp)
+                    action = strategy.run(data,
+                                          accountant,
+                                          price_usdt,
+                                          timestamp)
 
                 accountant.update_account(action=action,
                                           timestamp=timestamp,
