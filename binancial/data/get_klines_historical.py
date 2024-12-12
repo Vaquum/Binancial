@@ -1,10 +1,12 @@
-def get_klines_historical(symbol="BTCUSDT",
+def get_klines_historical(client,
+                          symbol="BTCUSDT",
                           interval='1h',
                           start_date=None,
                           end_date=None):
     
     '''Returns historical klines for a given symbol and interval
 
+    client | init_binance_api | historical client object
     symbol | str | ticker symbol e.g. 'BTCUSDT'
     interval | str | time interval e.g. '1h'
     start_date | str | start date in 'YYYY-MM-DD' format
@@ -15,10 +17,7 @@ def get_klines_historical(symbol="BTCUSDT",
     import pandas as pd
     import datetime as dt
 
-    from ..utils.init_binance_api import init_binance_api
     from ..utils.get_colnames import get_colnames
-
-    client = init_binance_api('historical')
 
     klines = client.get_historical_klines(symbol,
                                           interval,

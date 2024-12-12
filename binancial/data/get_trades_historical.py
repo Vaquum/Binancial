@@ -1,7 +1,8 @@
-def get_trades_historical(symbol="BTCUSDT"):
+def get_trades_historical(client, symbol="BTCUSDT"):
 
     '''Returns historical trades for a given symbol
     
+    client | init_binance_api | historical client object
     symbol | str | ticker symbol e.g. 'BTCUSDT' 
     '''
 
@@ -9,10 +10,7 @@ def get_trades_historical(symbol="BTCUSDT"):
     import wrangle as wr
     import pandas as pd
 
-    from ..utils.init_binance_api import init_binance_api
     from ..utils.get_colnames import get_colnames
-
-    client = init_binance_api(mode='historical')
 
     trades = client.get_historical_trades(symbol=symbol, limit=1000)
 

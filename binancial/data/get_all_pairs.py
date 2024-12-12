@@ -1,10 +1,9 @@
-def get_all_pairs():
+def get_all_pairs(client):
 
-    '''Returns all available ticker pairs on Binance'''
-
-    from ..utils.init_binance_api import init_binance_api
-
-    client = init_binance_api(mode='historical')
+    '''Returns all available ticker pairs on Binance
+    
+    client | init_binance_api | historical client object
+    '''
 
     tickers = client.get_all_tickers()
     symbols = [i['symbol'] for i in tickers if 'USDT' in i['symbol']]

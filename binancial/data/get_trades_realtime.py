@@ -1,7 +1,8 @@
-def get_trades_realtime(symbol, file_path):
+def get_trades_realtime(stream, symbol, file_path):
 
     '''Starts a realtime streaming of trades onto a file.
     
+    stream | init_binance_api | realtime stream object
     symbol | str | the symbol of the pair to be streamed
     file_path | str | the path to the file where the results are stored.
     
@@ -15,11 +16,8 @@ def get_trades_realtime(symbol, file_path):
     '''
 
     import datetime as dt
-    from ..utils.init_binance_api import init_binance_api
-
+    
     f = open(file_path, 'a')
-
-    stream = init_binance_api(mode='realtime')
     
     stream.start()
 
