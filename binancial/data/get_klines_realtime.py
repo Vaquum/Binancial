@@ -71,6 +71,8 @@ def get_klines_realtime(symbol, file_path):
 
             stream.stop_socket(stream)
 
-    stream.start_kline_socket(callback=handle_socket_message, symbol=symbol, interval='1m')
+    stream.start_kline_socket(callback=handle_socket_message,
+                              symbol=symbol,
+                              interval='1m')
     
     stream.join()
