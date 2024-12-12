@@ -1,4 +1,4 @@
-def mean_strategy(ticker, accountant, price_usdt, timestamp):
+def mean_reversion_crossover(ticker, accountant, price_usdt, timestamp):
 
     '''An example strategy for trading. Note that this can be
     replaced with any other trading strategy by following the same
