@@ -1,5 +1,7 @@
 def get_colnames(cols_for='klines'):
 
+    '''Get column names for klines or trades data'''
+
     if cols_for == 'klines':
 
         colnames = ['open_time',
@@ -17,6 +19,11 @@ def get_colnames(cols_for='klines'):
 
     elif cols_for == 'trades':
 
-        colnames = ['trade_id', 'price', 'quantity', 'quote_quantity', 'time', 'buyer_is_maker']
+        colnames = ['trade_id',
+                    'price',
+                    'quantity',
+                    'quote_quantity',
+                    'time',
+                    'buyer_is_maker']
 
     return colnames

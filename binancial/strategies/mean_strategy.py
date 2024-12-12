@@ -1,4 +1,15 @@
 def mean_strategy(ticker, accountant, price_usdt, timestamp):
+
+    '''An example strategy for trading. Note that this can be
+    replaced with any other trading strategy by following the same
+    template.
+
+    ticker | pandas dataframe | historical price data
+    accountant | Accountant object | account information
+    price_usdt | float | current price of the asset
+    timestamp | datetime | current timestamp    
+    
+    '''
     
     import numpy as np
     

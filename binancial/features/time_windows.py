@@ -1,5 +1,10 @@
 def time_windows(df):
 
+    '''Adds time window related columns to a dataframe
+    
+    df | pandas dataframe | dataframe with 'close' column
+    '''
+
     windows = [3, 5, 10, 15, 30, 45, 90, 180]
 
     # rolling averages

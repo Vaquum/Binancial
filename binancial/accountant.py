@@ -1,6 +1,13 @@
 class Accountant:
+
+    '''Accountant class is used to keep track of account information'''
     
     def __init__(self, start_usdt):
+        
+        '''Initializes the accountant object.
+        
+        start_usdt | int | starting usdt balance
+        '''
         
         self.id = 0
         
@@ -8,7 +15,12 @@ class Accountant:
         
         self.update_id()
         
-    def _init_account(self, credit_usdt, debit_usdt):
+    def _init_account(self, credit_usdt):
+        
+        '''Initializes the account with the starting balance.
+        
+        credit_usdt | int | starting usdt balance
+        '''
         
         account = {'id': [self.id],
                    'action': ['hold'],
@@ -29,6 +41,14 @@ class Accountant:
                        timestamp,
                        amount,
                        price_usdt):
+        
+        '''Updates the account information based on the action taken.
+        
+        action | str | 'buy', 'sell', or 'hold'
+        timestamp | datetime | current timestamp
+        amount | int | amount of BTC
+        price_usdt | float | current price of the asset
+        '''
         
         if action == 'buy':
             
@@ -83,3 +103,4 @@ class Accountant:
         updating account or book.'''
         
         self.id += 1
+        
