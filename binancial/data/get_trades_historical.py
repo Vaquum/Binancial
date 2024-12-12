@@ -1,5 +1,10 @@
 def get_trades_historical(symbol="BTCUSDT"):
 
+    '''Returns historical trades for a given symbol
+    
+    symbol | str | ticker symbol e.g. 'BTCUSDT' 
+    '''
+
     import datetime as dt
     import wrangle as wr
     import pandas as pd

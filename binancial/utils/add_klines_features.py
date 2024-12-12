@@ -1,4 +1,9 @@
-def add_klines_features(df):    
+def add_klines_features(df):
+
+    '''Add various features to the klines data
+    
+    df | pandas dataframe | klines data
+    '''    
     
     import wrangle as wr
 

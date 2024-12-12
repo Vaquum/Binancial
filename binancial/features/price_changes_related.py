@@ -1,5 +1,10 @@
 def price_changes_related(df):
 
+    '''Adds price changes related columns to a dataframe
+
+    df | pandas dataframe | dataframe with 'close' column
+    '''
+
     # percentile changes per time window
     df['1h_change'] = (df['close'].pct_change() * 100).round(2)
     df['2h_change'] = (df['close'].pct_change(2) * 100).round(2)
