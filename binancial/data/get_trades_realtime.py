@@ -31,8 +31,7 @@ def get_trades_realtime(symbol, file_path):
             
             price = round(float(msg['p']), 1)
 
-            trade = event_time + ',' + str(msg['t']) + ',' + str(price)
-            trade = trade + ',' + str(msg['q'])
+            trade = f"{event_time},{msg['t']},{price},{msg['q']}"
             
             f.write(trade + '\n')
         
