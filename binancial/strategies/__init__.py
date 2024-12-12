@@ -1,2 +1,2 @@
 from .mean_reversion_crossover import MeanReversionCrossover
-from .volume_confirmed_momentum_crossover import volume_confirmed_momentum_crossover
+from .volume_confirmed_momentum_crossover import VolumeConfirmedMomentumCrossover
