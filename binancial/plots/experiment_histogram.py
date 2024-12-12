@@ -8,8 +8,6 @@ def experiment_histogram(backtest_object):
     '''
 
     import astetik
-    import numpy as np
-    import pandas as pd
 
     data = backtest_object.profit_df
 

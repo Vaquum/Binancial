@@ -20,7 +20,10 @@ def get_klines_historical(symbol="BTCUSDT",
 
     client = init_binance_api('historical')
 
-    klines = client.get_historical_klines(symbol, interval, start_str=start_date, end_str=end_date)
+    klines = client.get_historical_klines(symbol,
+                                          interval,
+                                          start_str=start_date,
+                                          end_str=end_date)
     
     df = pd.DataFrame(klines)
 
@@ -28,6 +31,7 @@ def get_klines_historical(symbol="BTCUSDT",
 
     df = df.astype(float)
 
-    df['open_time'] = pd.to_datetime([dt.datetime.fromtimestamp(x/1000) for x in df['open_time']])
+    dt_str_col = [dt.datetime.fromtimestamp(x/1000) for x in df['open_time']]
+    df['open_time'] = pd.to_datetime(dt_str_col)
 
     return df

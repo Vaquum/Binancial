@@ -26,7 +26,8 @@ def get_trades_historical(symbol="BTCUSDT"):
     
     df = df.astype(float)
     
-    df['time'] = pd.to_datetime([dt.datetime.fromtimestamp(x/1000) for x in df['time']])
+    dt_str_col = [dt.datetime.fromtimestamp(x/1000) for x in df['time']]
+    df['time'] = pd.to_datetime(dt_str_col)
     
     df['buyer_is_maker'] = df['buyer_is_maker'].astype(bool)
 

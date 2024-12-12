@@ -13,8 +13,6 @@ def get_trades_realtime(symbol, file_path):
     - 'quantity'
     
     '''
-    
-    import sys
 
     import datetime as dt
     from ..utils.init_binance_api import init_binance_api
@@ -28,10 +26,12 @@ def get_trades_realtime(symbol, file_path):
     def handle_socket_message(msg):
 
         try:
-            event_time = dt.datetime.fromtimestamp(msg['E'] / 1000).strftime('%Y-%m-%d %H:%M:%S')
+            event_time = dt.datetime.fromtimestamp(msg['E'] / 1000)
+            event_time = event_time.strftime('%Y-%m-%d %H:%M:%S')
+            
             price = round(float(msg['p']), 1)
 
-            trade = event_time + ',' +  str(msg['t']) + ',' + str(price) + ',' + str(msg['q'])
+            trade = f"{event_time},{msg['t']},{price},{msg['q']}"
             
             f.write(trade + '\n')
         
