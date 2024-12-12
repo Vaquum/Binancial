@@ -1,1 +1,1 @@
-from .mean_strategy import mean_strategy
+from .mean_reversion_crossover import mean_reversion_crossover
