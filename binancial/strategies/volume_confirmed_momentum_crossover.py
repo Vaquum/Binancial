@@ -32,15 +32,16 @@ def volume_confirmed_momentum_crossover(ticker,
     # Trading logic
     if rolling_avg_short > rolling_avg_medium > rolling_avg_long:
         # Bullish momentum confirmed by short, medium, and long averages
-        if price_change_1h > breakout_threshold and current_volume > volume_threshold:
+        if price_change_1h > breakout_threshold and current_volume > volume_threshold and price_change_24h > 0.02:
+            # Require a significant 24-hour price change for confirmation
             action = 'buy'
         else:
             action = 'hold'
 
     elif rolling_avg_short < rolling_avg_long:
         # Bearish trend: Short average below long
-        if price_usdt > np.mean(accountant.account['buy_price_usdt']) * 1.03:
-            # Sell if price is 3% above average buy price
+        if short_term_momentum and price_usdt > np.mean(accountant.account['buy_price_usdt']) * 1.03:
+            # Only sell if short-term momentum is negative and price is profitable
             action = 'sell'
         else:
             action = 'hold'
