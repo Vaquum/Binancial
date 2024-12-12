@@ -11,15 +11,17 @@ class Accountant:
         
         self.id = 0
         
-        self.account = self._init_account(credit_usdt=start_usdt, debit_usdt=None)
+        self.account = self._init_account(credit_usdt=start_usdt,
+                                          debit_usdt=None)
         
         self.update_id()
         
-    def _init_account(self, credit_usdt):
+    def _init_account(self, credit_usdt, debit_usdt):
         
         '''Initializes the account with the starting balance.
         
         credit_usdt | int | starting usdt balance
+        debit_usdt | int | starting usdt balance
         '''
         
         account = {'id': [self.id],
