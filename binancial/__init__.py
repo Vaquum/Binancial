@@ -2,6 +2,7 @@ from .backtester import BackTester
 from .accountant import Accountant
 
 from . import data
+from . import features
 from . import plots
 from . import strategies
 from . import utils
