@@ -7,7 +7,7 @@ def add_klines_features(df):
     
     import wrangle as wr
 
-    from ..features.trend_and_momentun import trend_and_momentun
+    from ..features.trend_and_momentum import trend_and_momentum
     from ..features.is_day_highlow import is_day_highlow
     from ..features.price_changes_related import price_changes_related
     from ..features.datetime_related import datetime_related

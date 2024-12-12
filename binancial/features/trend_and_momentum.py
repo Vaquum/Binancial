@@ -1,4 +1,4 @@
-def trend_and_momentun(df):
+def trend_and_momentum(df):
     
     '''
     Generate trend and momentum features from the klines dataset.
