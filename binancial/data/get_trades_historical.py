@@ -1,4 +1,4 @@
-def get_trades_historical(client, symbol="BTCUSDT"):
+def get_trades_historical(client, symbol="BTCUSDT", limit=1000):
 
     '''Returns historical trades for a given symbol
     
@@ -12,7 +12,7 @@ def get_trades_historical(client, symbol="BTCUSDT"):
 
     from ..utils.get_colnames import get_colnames
 
-    trades = client.get_historical_trades(symbol=symbol, limit=1000)
+    trades = client.get_historical_trades(symbol=symbol, limit=limit)
 
     df = pd.DataFrame(trades)
     

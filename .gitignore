@@ -1,2 +1,9 @@
 __pycache__/
 .DS_Store
+.env
+.venv/
+.vscode/
+**/__pycache__/
+*.py[cod]
+*$py.class
+BTCUSDT_DAILY_1000.csv
