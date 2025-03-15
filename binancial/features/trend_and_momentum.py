@@ -71,7 +71,7 @@ def trend_and_momentum(df):
     df['typical_price'] = (df['high'] + df['low'] + df['close']) / 3
     df['cci'] = (df['typical_price'] - df['typical_price'].rolling(window=20).mean()) / (0.015 * df['typical_price'].rolling(window=20).std())
 
-    # 10. Kaufman’s Adaptive Moving Average (KAMA)
+    # 10. Kaufman's Adaptive Moving Average (KAMA)
     df['kama'] = df['close'].ewm(span=10, adjust=False).mean()
 
     # 11. Stochastic Oscillator
