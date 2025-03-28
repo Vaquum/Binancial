@@ -1,4 +1,8 @@
-def get_trades_historical(client, symbol="BTCUSDT", limit=1000):
+from typing import Any
+import pandas as pd
+
+def get_trades_historical(client: Any, symbol: str = "BTCUSDT", limit: int = 1000) -> pd.DataFrame:
+    ...
 
     '''Returns historical trades for a given symbol
     
