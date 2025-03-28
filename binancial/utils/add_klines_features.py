@@ -19,7 +19,7 @@ def add_klines_features(df):
     # all the price changes related
     df = price_changes_related(df)
 
-    # number of samples rising or falling trend has continued
+    # analyze trend and momentum of the samples
     df = trend_and_momentum(df)
 
     # if the sample is day highest or lowest
