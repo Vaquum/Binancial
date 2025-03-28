@@ -7,3 +7,5 @@ __pycache__/
 *.py[cod]
 *$py.class
 BTCUSDT_DAILY_1000.csv
+.cursorrules
+.cursor/
