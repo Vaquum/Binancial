@@ -3,3 +3,5 @@ pandas
 numpy
 wrangle
 tqdm
+xgboost==2.0.3
+scikit-learn==1.4.1.post1

@@ -63,7 +63,7 @@ class BackTester:
             # produce the account data
             account_df = pd.DataFrame(accountant.account).set_index('id')
             account_df = account_df[1:]
-            open_values = data.loc[account_df.timestamp][['open']]
+            open_values = data.loc[account_df.timestamp]
             open_values.reset_index(inplace=True)
             open_values['open_time'] = open_values['open_time'].astype('O')
             account_df = account_df.merge(open_values, left_on='timestamp', right_on='open_time')
