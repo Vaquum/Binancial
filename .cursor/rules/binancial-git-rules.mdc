@@ -1,0 +1,19 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+This is required whenever the project already has `.git`.
+
+- Always create a new branch for new issue 
+- If I give you issue always use Github MCP to get the issue
+- When creating a new branch, always do it from `main`
+- When creating a new branch, always pull the latest to `main` first
+- Never make changes directly to `main` branch
+- Always follow conventional commits with commit messages
+- Always name PR as per conventional commits
+- Always name branches as per conventional commits
+- Always make pull request with new branch before concluding the prompt
+- Keep committing fixes to the same branch until I've accepeted all your changes
+- Do not switch branch before the current branch is deleted from origin
+- If the prompt was a Github issue, make sure the PR closes that issue automatically (i.e. Closes #xx)
