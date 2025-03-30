@@ -8,3 +8,4 @@ __pycache__/
 *$py.class
 BTCUSDT_DAILY_1000.csv
 .cursor/
+venv/

@@ -18,24 +18,17 @@
 
 ## Description
 
-A set of trading desk capabilities for Binance API. 
-
-<!-- This section provides a high-level overview for the repo -->
+A Binance API-wrapper that brings all klines and trades data end-points to single-line commands.
 
 ## Owner
 
 - [@mikkokotila](https://github.com/mikkokotila)
 
-<!-- This section lists the owners of the repo -->
 
 ## Integrations
 
 - No integrations with other repos.
 
-<!-- This section must list as bulleted list how this repo depends or is integrated with other repos -->
-
 ## Docs
 
 No documentations.
-
-<!-- This section must link to the docs which are in the root of the repository in /docs -->
