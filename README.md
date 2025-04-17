@@ -20,6 +20,12 @@
 
 A Binance API-wrapper that brings all klines and trades data end-points to single-line commands.
 
+### Features
+
+- Fetch historical klines data with simple commands
+- Retrieve any number of historical trades (supports pagination for large requests)
+- Clean data formatting with consistent column names and proper data types
+
 ## Owner
 
 - [@mikkokotila](https://github.com/mikkokotila)

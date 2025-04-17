@@ -1,5 +1,12 @@
 # Changelog
 
+## 14:45 on 14-08-2024
+
+- Enhanced `get_trades_historical` function to support retrieving any number of trades using ID-based pagination
+  - Added functionality to make multiple API calls when limit exceeds 1000
+  - Maintains backward compatibility with existing implementation
+  - Improved documentation to reflect new capability
+
 ## 15:23 on 19-03-2024
 
 - Locked all package versions in setup.py and requirements.txt:

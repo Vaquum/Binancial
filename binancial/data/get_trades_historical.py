@@ -7,7 +7,8 @@ def get_trades_historical(client: Any, symbol: str = "BTCUSDT", limit: int = 100
     '''Returns historical trades for a given symbol
     
     client | init_binance_api | historical client object
-    symbol | str | ticker symbol e.g. 'BTCUSDT' 
+    symbol | str | ticker symbol e.g. 'BTCUSDT'
+    limit | int | number of trades to fetch (can exceed 1000)
     '''
 
     import datetime as dt
@@ -16,9 +17,35 @@ def get_trades_historical(client: Any, symbol: str = "BTCUSDT", limit: int = 100
 
     from ..utils.get_colnames import get_colnames
 
-    trades = client.get_historical_trades(symbol=symbol, limit=limit)
-
-    df = pd.DataFrame(trades)
+    all_trades = []
+    remaining = limit
+    
+    # Binance API has a limit of 1000 trades per request
+    batch_size = min(1000, limit)
+    
+    # Get first batch
+    trades = client.get_historical_trades(symbol=symbol, limit=batch_size)
+    all_trades.extend(trades)
+    remaining -= len(trades)
+    
+    # If we need more trades, continue fetching using fromId pagination
+    while remaining > 0 and trades:
+        # Get oldest trade ID from previous batch
+        from_id = trades[-1]['id']
+        batch_size = min(1000, remaining)
+        
+        # Fetch next batch of trades
+        trades = client.get_historical_trades(symbol=symbol, limit=batch_size, fromId=from_id)
+        
+        # Break if no more trades are returned
+        if not trades:
+            break
+            
+        all_trades.extend(trades)
+        remaining -= len(trades)
+    
+    # Process the aggregated trades
+    df = pd.DataFrame(all_trades)
     
     df = df.drop(columns='isBestMatch')
     
