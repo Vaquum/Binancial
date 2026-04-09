@@ -12,6 +12,7 @@ setup(
         'tqdm==4.67.1',
         'xgboost==2.0.3',
         'scikit-learn==1.4.1.post1',
+        'nest_asyncio==1.6.0',
     ],
     author='Mikko Kotila',
     description='A Binance API-wrapper that brings all klines and trades data end-points to single-line commands.',

@@ -6,81 +6,71 @@ import pandas as pd
 from binancial.data.get_trades_historical import get_trades_historical
 
 
+def _make_trade(trade_id, price, qty, time, is_buyer_maker):
+    return {
+        'id': trade_id,
+        'price': str(price),
+        'qty': str(qty),
+        'quoteQty': str(float(price) * float(qty)),
+        'time': time,
+        'isBuyerMaker': is_buyer_maker,
+        'isBestMatch': True,
+    }
+
+
 @pytest.fixture
 def mock_client():
     """Create a mock client for testing."""
-    client = MagicMock()
-    
-    # Mock trades data with proper structure
-    mock_trades_1 = [
-        {'id': 1, 'price': '100', 'qty': '1', 'time': 1629283200000, 
-         'isBuyerMaker': True, 'isBestMatch': True},
-        {'id': 2, 'price': '101', 'qty': '2', 'time': 1629283300000, 
-         'isBuyerMaker': False, 'isBestMatch': True},
-    ]
-    
-    mock_trades_2 = [
-        {'id': 3, 'price': '102', 'qty': '3', 'time': 1629283400000, 
-         'isBuyerMaker': True, 'isBestMatch': True},
-        {'id': 4, 'price': '103', 'qty': '4', 'time': 1629283500000, 
-         'isBuyerMaker': False, 'isBestMatch': True},
-    ]
-    
-    # Setup the mock to return different data for different calls
-    client.get_historical_trades.side_effect = [
-        mock_trades_1,
-        mock_trades_2,
-        []  # Empty list for any additional calls
-    ]
-    
-    return client
+    return MagicMock()
 
 
-@patch('binancial.data.get_trades_historical.get_colnames')
-@patch('binancial.data.get_trades_historical.wr')
-def test_get_trades_historical_default_limit(mock_wr, mock_get_colnames, mock_client):
+def test_get_trades_historical_default_limit(mock_client):
     """Test get_trades_historical with default limit."""
-    # Setup mocks
-    mock_get_colnames.return_value = ['id', 'price', 'qty', 'time', 'buyer_is_maker']
-    mock_wr.col_move_place.return_value = pd.DataFrame({
-        'id': [1, 2], 
-        'price': [100, 101], 
-        'qty': [1, 2], 
-        'time': [1629283200000, 1629283300000],
-        'buyer_is_maker': [True, False]
-    })
-    
-    # Call the function
+    trades = [
+        _make_trade(i, 100 + i, 1, 1629283200000 + i * 1000, i % 2 == 0)
+        for i in range(1000)
+    ]
+    mock_client.get_historical_trades.return_value = trades
+
     result = get_trades_historical(mock_client)
-    
-    # Assertions
-    mock_client.get_historical_trades.assert_called_once()
+
+    mock_client.get_historical_trades.assert_called_once_with(symbol='BTCUSDT', limit=1000)
     assert isinstance(result, pd.DataFrame)
-    assert not result.empty
+    assert len(result) == 1000
+    assert list(result.columns) == ['time', 'trade_id', 'price', 'quantity', 'quote_quantity', 'buyer_is_maker']
+    assert result['trade_id'].dtype == int
+    assert result['buyer_is_maker'].dtype == bool
 
 
-@patch('binancial.data.get_trades_historical.get_colnames')
-@patch('binancial.data.get_trades_historical.wr')
-def test_get_trades_historical_pagination(mock_wr, mock_get_colnames, mock_client):
+def test_get_trades_historical_pagination(mock_client):
     """Test get_trades_historical with pagination (limit > 1000)."""
-    # Setup mocks
-    mock_get_colnames.return_value = ['id', 'price', 'qty', 'time', 'buyer_is_maker']
-    mock_wr.col_move_place.return_value = pd.DataFrame({
-        'id': [1, 2, 3, 4], 
-        'price': [100, 101, 102, 103], 
-        'qty': [1, 2, 3, 4], 
-        'time': [1629283200000, 1629283300000, 1629283400000, 1629283500000],
-        'buyer_is_maker': [True, False, True, False]
-    })
-    
-    # Call the function with limit > 1000 to trigger pagination
-    result = get_trades_historical(mock_client, limit=2500)
-    
-    # Assertions
-    assert mock_client.get_historical_trades.call_count >= 2
-    assert isinstance(result, pd.DataFrame)
-    assert not result.empty
-    
-    # Verify fromId parameter was used for pagination
-    args, kwargs = mock_client.get_historical_trades.call_args_list[1]
-    assert 'fromId' in kwargs 
+    batch_1 = [
+        _make_trade(i, 100 + i, 1, 1629283200000 + i * 1000, i % 2 == 0)
+        for i in range(1000)
+    ]
+    batch_2 = [
+        _make_trade(1000 + i, 200 + i, 2, 1629284200000 + i * 1000, i % 2 == 0)
+        for i in range(500)
+    ]
+    mock_client.get_historical_trades.side_effect = [batch_1, batch_2]
+
+    result = get_trades_historical(mock_client, limit=1500)
+
+    assert mock_client.get_historical_trades.call_count == 2
+    assert len(result) == 1500
+    assert result['trade_id'].nunique() == 1500
+
+    # Verify fromId uses last_id + 1 to avoid duplicates
+    second_call_kwargs = mock_client.get_historical_trades.call_args_list[1][1]
+    assert second_call_kwargs['fromId'] == 1000
+
+
+def test_get_trades_historical_no_duplicates_at_boundary(mock_client):
+    """Test that pagination doesn't produce duplicate trades at batch boundaries."""
+    batch_1 = [_make_trade(i, 100, 1, 1629283200000, False) for i in range(1000)]
+    batch_2 = [_make_trade(1000 + i, 100, 1, 1629283200000, False) for i in range(200)]
+    mock_client.get_historical_trades.side_effect = [batch_1, batch_2]
+
+    result = get_trades_historical(mock_client, limit=1200)
+
+    assert result['trade_id'].nunique() == len(result)

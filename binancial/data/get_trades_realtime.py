@@ -2,7 +2,6 @@ from typing import Any
 from datetime import datetime
 import logging
 import nest_asyncio
-from contextlib import contextmanager
 from pathlib import Path
 
 def get_trades_realtime(stream: Any, symbol: str, file_path: str | Path) -> None:

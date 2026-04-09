@@ -30,8 +30,8 @@ def get_trades_historical(client: Any, symbol: str = "BTCUSDT", limit: int = 100
     
     # If we need more trades, continue fetching using fromId pagination
     while remaining > 0 and trades:
-        # Get oldest trade ID from previous batch
-        from_id = trades[-1]['id']
+        # Get oldest trade ID from previous batch (+ 1 to avoid duplicate)
+        from_id = trades[-1]['id'] + 1
         batch_size = min(1000, remaining)
         
         # Fetch next batch of trades
@@ -53,11 +53,12 @@ def get_trades_historical(client: Any, symbol: str = "BTCUSDT", limit: int = 100
     
     df = wr.col_move_place(df, 'time')
     
-    df = df.astype(float)
-    
+    df['trade_id'] = df['trade_id'].astype(int)
+    df[['price', 'quantity', 'quote_quantity']] = df[['price', 'quantity', 'quote_quantity']].astype(float)
+
     dt_str_col = [dt.datetime.fromtimestamp(x/1000) for x in df['time']]
     df['time'] = pd.to_datetime(dt_str_col)
-    
+
     df['buyer_is_maker'] = df['buyer_is_maker'].astype(bool)
 
     return df
