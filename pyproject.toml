@@ -60,6 +60,15 @@ typeCheckingMode = "strict"
 include = [
     "binancial",
 ]
+exclude = [
+    "binancial/**/tests",
+    "scripts",
+]
+reportMissingTypeStubs = false
+reportUnknownMemberType = false
+reportUnknownVariableType = false
+reportUnknownArgumentType = false
+reportUnknownParameterType = false
 
 [tool.pytest.ini_options]
 testpaths = ["binancial"]
