@@ -1,9 +1,13 @@
 """Tests for get_trades_historical function."""
-import pytest
-from unittest.mock import MagicMock, patch, call
-import pandas as pd
+from unittest.mock import MagicMock
 
-from binancial.data.get_trades_historical import get_trades_historical
+import pandas as pd
+import pytest
+
+from binancial.data.get_trades_historical import (
+    _parse_datetime_ms,
+    get_trades_historical,
+)
 
 
 def _make_trade(trade_id, price, qty, time, is_buyer_maker):
@@ -120,7 +124,6 @@ def test_get_trades_historical_start_and_end_date(mock_client):
     import datetime as dt
 
     start_ms = int(dt.datetime.strptime('2025-01-01', '%Y-%m-%d').timestamp() * 1000)
-    end_ms = int(dt.datetime.strptime('2025-01-02', '%Y-%m-%d').timestamp() * 1000)
 
     mock_client.get_aggregate_trades.return_value = [
         {'a': 1, 'p': '100', 'q': '1', 'f': 5000, 'l': 5000, 'T': start_ms, 'm': True, 'M': True}
@@ -137,3 +140,54 @@ def test_get_trades_historical_start_and_end_date(mock_client):
     mock_client.get_aggregate_trades.assert_called_once()
     assert len(result) == 5
     assert result.iloc[0]['trade_id'] == 5000
+
+
+def test_parse_datetime_ms_invalid_format():
+    """Test that invalid format raises ValueError."""
+    with pytest.raises(ValueError, match='Invalid datetime format'):
+        _parse_datetime_ms('not-a-date')
+
+
+def test_get_trades_historical_empty_result(mock_client):
+    """Test that empty result returns DataFrame with correct columns."""
+    mock_client.get_aggregate_trades.return_value = [
+        {'a': 1, 'p': '100', 'q': '1', 'f': 5000, 'l': 5000,
+         'T': 1735689600000, 'm': True, 'M': True}
+    ]
+    # Return trades past end_date so they all get filtered
+    mock_client.get_historical_trades.return_value = [
+        _make_trade(5000, 100, 1, 9999999999999, False),
+    ]
+
+    result = get_trades_historical(
+        mock_client, start_date='2025-01-01', end_date='2025-01-01', limit=10,
+    )
+    assert len(result) == 0
+    assert 'trade_id' in result.columns
+
+
+def test_get_trades_historical_end_date_stops_pagination(mock_client):
+    """Test that pagination stops when all trades in a batch exceed end_date."""
+    import datetime as dt
+    start_ms = int(dt.datetime.strptime('2025-01-01', '%Y-%m-%d').timestamp() * 1000)
+
+    mock_client.get_aggregate_trades.return_value = [
+        {'a': 1, 'p': '100', 'q': '1', 'f': 1, 'l': 1,
+         'T': start_ms, 'm': True, 'M': True}
+    ]
+
+    # All trades in batch_1 are within end_date range
+    batch_1 = [_make_trade(i, 100, 1, start_ms + i, False) for i in range(1000)]
+    # All trades in batch_2 are past end_date (10 seconds later)
+    batch_2 = [_make_trade(1000 + i, 100, 1, start_ms + 10_000, False) for i in range(5)]
+
+    mock_client.get_historical_trades.side_effect = [batch_1, batch_2]
+
+    result = get_trades_historical(
+        mock_client, start_date='2025-01-01',
+        end_date='2025-01-01 00:00:02', limit=5000,
+    )
+
+    # batch_1 all within range, batch_2 all filtered -> stops pagination
+    assert len(result) == 1000
+    assert mock_client.get_historical_trades.call_count == 2

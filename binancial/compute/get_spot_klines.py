@@ -1,9 +1,8 @@
-from typing import Any
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Any
 
-import pandas as pd
 import numpy as np
-
+import pandas as pd
 
 KLINE_COLUMNS = [
     'datetime', 'open', 'high', 'low', 'close', 'mean', 'std',

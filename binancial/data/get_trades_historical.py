@@ -1,4 +1,5 @@
 from typing import Any
+
 import pandas as pd
 
 
@@ -20,6 +21,7 @@ def _parse_datetime_ms(value: str) -> int:
 def _api_call(fn, **kwargs):
     '''Call a Binance API function with rate-limit retry.'''
     import time as _time
+
     from binance.exceptions import BinanceAPIException
 
     for attempt in range(5):
@@ -47,6 +49,7 @@ def _resolve_start_id(client: Any, symbol: str, start_datetime: str) -> int:
 def _format_trades(df: pd.DataFrame) -> pd.DataFrame:
     '''Apply standard column names, types, and formatting to raw trades DataFrame.'''
     import datetime as dt
+
     import wrangle as wr
 
     from ..utils.get_colnames import get_colnames

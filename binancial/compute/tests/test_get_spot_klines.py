@@ -1,18 +1,18 @@
 """Tests for get_spot_klines and its internal helpers."""
-import pytest
 import datetime as dt
 from unittest.mock import MagicMock, patch
-import pandas as pd
+
 import numpy as np
+import pandas as pd
+import pytest
 
 from binancial.compute.get_spot_klines import (
-    _build_chunks,
-    _aggregate_trades,
-    _drop_partial_kline,
-    get_spot_klines,
     KLINE_COLUMNS,
+    _aggregate_trades,
+    _build_chunks,
+    _parse_datetime,
+    get_spot_klines,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -62,6 +62,12 @@ class TestBuildChunks:
         assert len(chunks) == 2
         assert chunks[0][0] == '2025-01-01 00:00:00'
         assert chunks[1][1] == '2025-01-02 00:00:00'
+
+
+class TestParseDatetime:
+    def test_invalid_format_raises(self):
+        with pytest.raises(ValueError, match='Invalid datetime format'):
+            _parse_datetime('not-a-date')
 
 
 # ---------------------------------------------------------------------------

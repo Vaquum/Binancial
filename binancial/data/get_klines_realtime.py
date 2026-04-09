@@ -1,8 +1,10 @@
-from typing import Any
-from datetime import datetime
 import logging
-import nest_asyncio
+from datetime import datetime
 from pathlib import Path
+from typing import Any
+
+import nest_asyncio
+
 
 def get_klines_realtime(stream: Any, symbol: str, file_path: str | Path, interval: str = '1m') -> None:
     '''Starts a realtime streaming of klines (candlesticks) onto a file.
@@ -111,7 +113,7 @@ def get_klines_realtime(stream: Any, symbol: str, file_path: str | Path, interva
             
             stream.join()
             
-    except IOError as io_error:
+    except OSError as io_error:
         logger.error(f"File operation failed: {io_error}")
         if socket_id:
             stream.stop_socket(socket_id)

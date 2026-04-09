@@ -14,8 +14,9 @@ def get_klines_historical(client,
     
     '''
 
-    import pandas as pd
     import datetime as dt
+
+    import pandas as pd
 
     from ..utils.get_colnames import get_colnames
 
