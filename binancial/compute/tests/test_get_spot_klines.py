@@ -8,6 +8,7 @@ import numpy as np
 from binancial.compute.get_spot_klines import (
     _build_chunks,
     _aggregate_trades,
+    _drop_partial_kline,
     get_spot_klines,
     KLINE_COLUMNS,
 )
@@ -233,19 +234,20 @@ class TestGetSpotKlines:
         """Trades appearing in two adjacent chunks are deduplicated."""
         base = _ts(2025, 1, 1, 0, 0, 0)
 
+        # 3 buckets: second 0 (ids 1-3), second 1 (ids 4-5), second 2 (id 6 dup as 3)
         chunk_a = _make_trades_df(
-            trade_ids=[1, 2, 3],
-            prices=[100, 101, 102],
-            quantities=[1.0, 1.0, 1.0],
-            times_ms=[base, base + 100, base + 200],
-            maker_flags=[True, True, False],
+            trade_ids=[1, 2, 3, 4, 5],
+            prices=[100, 101, 102, 200, 201],
+            quantities=[1.0, 1.0, 1.0, 1.0, 1.0],
+            times_ms=[base, base + 100, base + 200, base + 1000, base + 1100],
+            maker_flags=[True, True, False, True, False],
         )
-        # Chunk B has trade_id 3 duplicated (boundary overlap)
+        # Chunk B has trade_id 5 duplicated (boundary overlap) + new trades in second 2
         chunk_b = _make_trades_df(
-            trade_ids=[3, 4, 5],
-            prices=[102, 103, 104],
+            trade_ids=[5, 6, 7],
+            prices=[201, 300, 301],
             quantities=[1.0, 1.0, 1.0],
-            times_ms=[base + 200, base + 300, base + 400],
+            times_ms=[base + 1100, base + 2000, base + 2100],
             maker_flags=[False, True, False],
         )
 
@@ -258,19 +260,22 @@ class TestGetSpotKlines:
             workers=2,
         )
 
-        assert result.iloc[0]['no_of_trades'] == 5  # not 6
+        # 3 buckets, last dropped -> 2 rows; trade_id 5 deduped
+        assert len(result) == 2
+        assert result.iloc[0]['no_of_trades'] == 3  # bucket 0: ids 1,2,3
 
     @patch('binancial.compute.get_spot_klines._fetch_chunk')
     def test_empty_chunks_handled(self, mock_fetch):
         """If some chunks return empty DataFrames, result is still correct."""
         base = _ts(2025, 1, 1, 0, 0, 0)
 
+        # Need 2 buckets so one survives the partial kline drop
         non_empty = _make_trades_df(
-            trade_ids=[1, 2],
-            prices=[100, 101],
-            quantities=[1.0, 1.0],
-            times_ms=[base, base + 100],
-            maker_flags=[True, False],
+            trade_ids=[1, 2, 3, 4],
+            prices=[100, 101, 200, 201],
+            quantities=[1.0, 1.0, 1.0, 1.0],
+            times_ms=[base, base + 100, base + 1000, base + 1100],
+            maker_flags=[True, False, True, False],
         )
         empty = pd.DataFrame(columns=['time', 'trade_id', 'price', 'quantity',
                                        'quote_quantity', 'buyer_is_maker'])
@@ -284,6 +289,7 @@ class TestGetSpotKlines:
             workers=3,
         )
 
+        # 2 buckets, last dropped -> 1 row
         assert len(result) == 1
         assert result.iloc[0]['no_of_trades'] == 2
 
@@ -309,13 +315,13 @@ class TestGetSpotKlines:
         """Trades in the same kline bucket split across chunks are aggregated together."""
         base = _ts(2025, 1, 1, 0, 0, 0)
 
-        # Both chunks have trades in the same 1-second bucket
+        # Two buckets: second 0 has trades from both chunks, second 1 has extras
         chunk_a = _make_trades_df(
-            trade_ids=[1, 2],
-            prices=[100, 101],
-            quantities=[1.0, 1.0],
-            times_ms=[base + 100, base + 200],
-            maker_flags=[True, False],
+            trade_ids=[1, 2, 5, 6],
+            prices=[100, 101, 300, 301],
+            quantities=[1.0, 1.0, 1.0, 1.0],
+            times_ms=[base + 100, base + 200, base + 1000, base + 1100],
+            maker_flags=[True, False, True, True],
         )
         chunk_b = _make_trades_df(
             trade_ids=[3, 4],
@@ -334,7 +340,7 @@ class TestGetSpotKlines:
             workers=2,
         )
 
-        # All 4 trades are in the same 1-second bucket
+        # 2 buckets, last dropped -> 1 row with 4 trades (ids 1-4)
         assert len(result) == 1
         assert result.iloc[0]['no_of_trades'] == 4
         assert result.iloc[0]['open'] == 100.0   # trade_id 1
@@ -345,11 +351,11 @@ class TestGetSpotKlines:
         """Without both start/end dates, falls back to single-threaded fetch."""
         base = _ts(2025, 1, 1, 0, 0, 0)
         trades = _make_trades_df(
-            trade_ids=[1, 2],
-            prices=[100, 101],
-            quantities=[1.0, 1.0],
-            times_ms=[base, base + 1000],
-            maker_flags=[True, False],
+            trade_ids=[1, 2, 3],
+            prices=[100, 101, 200],
+            quantities=[1.0, 1.0, 1.0],
+            times_ms=[base, base + 100, base + 1000],
+            maker_flags=[True, False, True],
         )
         mock_get_trades.return_value = trades
         client = MagicMock()
@@ -357,4 +363,33 @@ class TestGetSpotKlines:
         result = get_spot_klines(client, kline_size=1)
 
         mock_get_trades.assert_called_once()
+        # 2 buckets, last dropped -> 1 row
+        assert len(result) == 1
+
+    @patch('binancial.compute.get_spot_klines._fetch_chunk')
+    def test_partial_kline_dropped(self, mock_fetch):
+        """The last kline is always dropped to avoid partial data."""
+        base = _ts(2025, 1, 1, 0, 0, 0)
+
+        trades = _make_trades_df(
+            trade_ids=[1, 2, 3, 4, 5, 6],
+            prices=[100, 101, 200, 201, 300, 301],
+            quantities=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            times_ms=[base, base + 100, base + 1000, base + 1100,
+                       base + 2000, base + 2100],
+            maker_flags=[True, False, True, False, True, False],
+        )
+
+        mock_fetch.return_value = trades
+        client = MagicMock()
+
+        result = get_spot_klines(
+            client, kline_size=1,
+            start_date='2025-01-01 00:00:00', end_date='2025-01-01 00:01:00',
+            workers=1,
+        )
+
+        # 3 kline buckets (second 0, 1, 2), last dropped -> 2 rows
         assert len(result) == 2
+        # Last remaining row should be second 1, not second 2
+        assert result.iloc[-1]['open'] == 200.0
