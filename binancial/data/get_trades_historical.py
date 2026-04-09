@@ -12,7 +12,8 @@ def _parse_datetime_ms(value: str) -> int:
 
     for fmt in ('%Y-%m-%d %H:%M:%S', '%Y-%m-%d'):
         try:
-            return int(dt.datetime.strptime(value, fmt).timestamp() * 1000)
+            parsed = dt.datetime.strptime(value, fmt).replace(tzinfo=dt.UTC)
+            return int(parsed.timestamp() * 1000)
         except ValueError:
             continue
     raise ValueError(f'Invalid datetime format: {value!r}. Use YYYY-MM-DD or YYYY-MM-DD HH:MM:SS')
@@ -39,7 +40,7 @@ def _resolve_start_id(client: Any, symbol: str, start_datetime: str) -> int:
     '''Resolve a datetime string to the first trade ID at or after that time.'''
 
     start_ms = _parse_datetime_ms(start_datetime)
-    agg = client.get_aggregate_trades(symbol=symbol, startTime=start_ms, limit=1)
+    agg = _api_call(client.get_aggregate_trades, symbol=symbol, startTime=start_ms, limit=1)
 
     if not agg:
         raise ValueError(f'No trades found at or after {start_datetime}')
@@ -49,8 +50,6 @@ def _resolve_start_id(client: Any, symbol: str, start_datetime: str) -> int:
 
 def _format_trades(df: pd.DataFrame) -> pd.DataFrame:
     '''Apply standard column names, types, and formatting to raw trades DataFrame.'''
-    import datetime as dt
-
     import wrangle as wr
 
     from ..utils.get_colnames import get_colnames
@@ -62,8 +61,7 @@ def _format_trades(df: pd.DataFrame) -> pd.DataFrame:
     df['trade_id'] = df['trade_id'].astype(int)
     df[['price', 'quantity', 'quote_quantity']] = df[['price', 'quantity', 'quote_quantity']].astype(float)
 
-    dt_str_col = [dt.datetime.fromtimestamp(x / 1000) for x in df['time']]
-    df['time'] = pd.to_datetime(dt_str_col)
+    df['time'] = pd.to_datetime(df['time'], unit='ms', utc=True)
 
     df['buyer_is_maker'] = df['buyer_is_maker'].astype(bool)
 

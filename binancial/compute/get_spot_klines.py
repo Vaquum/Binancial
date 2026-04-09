@@ -18,7 +18,7 @@ def _parse_datetime(value: str):
 
     for fmt in ('%Y-%m-%d %H:%M:%S', '%Y-%m-%d'):
         try:
-            return dt.datetime.strptime(value, fmt)
+            return dt.datetime.strptime(value, fmt).replace(tzinfo=dt.UTC)
         except ValueError:
             continue
     raise ValueError(f'Invalid datetime format: {value!r}')

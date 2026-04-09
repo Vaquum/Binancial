@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.2.0
+
+- Added `compute` module with `get_spot_klines` — builds 19-column klines from raw trades with OHLC, statistical measures, volume, maker metrics, and liquidity metrics
+- Added datetime filtering (`YYYY-MM-DD HH:MM:SS`) to `get_trades_historical`
+- Added parallel fetching with `ThreadPoolExecutor` for bulk trade retrieval (~4s per hour)
+- Added rate-limit retry logic for Binance API (code -1003)
+- Added partial kline removal to guarantee only complete data is returned
+- Fixed pagination duplicates in `get_trades_historical` (off-by-one on `fromId`)
+- Fixed `trade_id` precision loss (was cast to float, now stays int64)
+- Fixed timezone handling — all datetime parsing and formatting now uses UTC
+- Migrated from `setup.py` + `requirements.txt` to `pyproject.toml`
+- Bumped Python minimum version to 3.12
+- Added CI gates: style-gate (ruff), type-gate (pyright), test-gate (pytest), coverage-gate (>95%)
+- Added automated release system via Claude AI
+- Added documentation system contract and docs hub
+- Added `nest_asyncio` to dependencies
+- 38 tests, 95%+ coverage
+
 ## 14:45 on 14-08-2024
 
 - Enhanced `get_trades_historical` function to support retrieving any number of trades using ID-based pagination
@@ -16,4 +34,4 @@
   - wrangle==0.7.6
   - tqdm==4.67.1
   - xgboost==2.0.3
-  - scikit-learn==1.4.1.post1 
+  - scikit-learn==1.4.1.post1

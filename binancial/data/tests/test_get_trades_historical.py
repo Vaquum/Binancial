@@ -84,7 +84,7 @@ def test_get_trades_historical_start_date(mock_client):
     """Test that start_date resolves to a fromId via aggregate trades."""
     import datetime as dt
 
-    start_ms = int(dt.datetime.strptime('2025-01-01', '%Y-%m-%d').timestamp() * 1000)
+    start_ms = int(dt.datetime(2025, 1, 1, tzinfo=dt.UTC).timestamp() * 1000)
 
     mock_client.get_aggregate_trades.return_value = [
         {'a': 1, 'p': '100', 'q': '1', 'f': 5000, 'l': 5002, 'T': start_ms, 'm': True, 'M': True}
@@ -104,7 +104,7 @@ def test_get_trades_historical_end_date_filters(mock_client):
     """Test that trades past end_date are filtered out."""
     import datetime as dt
 
-    end_ms = int(dt.datetime.strptime('2025-01-02', '%Y-%m-%d').timestamp() * 1000)
+    end_ms = int(dt.datetime(2025, 1, 2, tzinfo=dt.UTC).timestamp() * 1000)
 
     trades = [
         _make_trade(i, 100, 1, end_ms - 2000 + i * 1000, False)
@@ -123,7 +123,7 @@ def test_get_trades_historical_start_and_end_date(mock_client):
     """Test with both start_date and end_date."""
     import datetime as dt
 
-    start_ms = int(dt.datetime.strptime('2025-01-01', '%Y-%m-%d').timestamp() * 1000)
+    start_ms = int(dt.datetime(2025, 1, 1, tzinfo=dt.UTC).timestamp() * 1000)
 
     mock_client.get_aggregate_trades.return_value = [
         {'a': 1, 'p': '100', 'q': '1', 'f': 5000, 'l': 5000, 'T': start_ms, 'm': True, 'M': True}
@@ -169,7 +169,7 @@ def test_get_trades_historical_empty_result(mock_client):
 def test_get_trades_historical_end_date_stops_pagination(mock_client):
     """Test that pagination stops when all trades in a batch exceed end_date."""
     import datetime as dt
-    start_ms = int(dt.datetime.strptime('2025-01-01', '%Y-%m-%d').timestamp() * 1000)
+    start_ms = int(dt.datetime(2025, 1, 1, tzinfo=dt.UTC).timestamp() * 1000)
 
     mock_client.get_aggregate_trades.return_value = [
         {'a': 1, 'p': '100', 'q': '1', 'f': 1, 'l': 1,
