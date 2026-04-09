@@ -1,4 +1,4 @@
-def get_colnames(cols_for='klines'):
+def get_colnames(cols_for: str = 'klines') -> list[str]:
 
     '''Get column names for klines or trades data'''
 

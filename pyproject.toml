@@ -62,6 +62,7 @@ include = [
 ]
 exclude = [
     "binancial/**/tests",
+    "binancial/utils/add_klines_features.py",
     "scripts",
 ]
 reportMissingTypeStubs = false

@@ -18,7 +18,7 @@ def _parse_datetime_ms(value: str) -> int:
     raise ValueError(f'Invalid datetime format: {value!r}. Use YYYY-MM-DD or YYYY-MM-DD HH:MM:SS')
 
 
-def _api_call(fn, **kwargs):
+def _api_call(fn: Any, **kwargs: Any) -> Any:
     '''Call a Binance API function with rate-limit retry.'''
     import time as _time
 
@@ -32,6 +32,7 @@ def _api_call(fn, **kwargs):
                 _time.sleep(15 * (attempt + 1))
             else:
                 raise
+    return None
 
 
 def _resolve_start_id(client: Any, symbol: str, start_datetime: str) -> int:
