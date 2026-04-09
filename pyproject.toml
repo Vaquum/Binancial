@@ -70,6 +70,7 @@ reportUnknownMemberType = false
 reportUnknownVariableType = false
 reportUnknownArgumentType = false
 reportUnknownParameterType = false
+reportUnnecessaryIsInstance = false
 
 [tool.pytest.ini_options]
 testpaths = ["binancial"]

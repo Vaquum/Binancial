@@ -133,7 +133,7 @@ def get_trades_historical(client: Any,
         remaining -= len(trades)
 
     if not all_trades:
-        return pd.DataFrame(columns=['time', 'trade_id', 'price', 'quantity', 'quote_quantity', 'buyer_is_maker'])
+        return pd.DataFrame(columns=pd.Index(['time', 'trade_id', 'price', 'quantity', 'quote_quantity', 'buyer_is_maker']))
 
     df = pd.DataFrame(all_trades)
 

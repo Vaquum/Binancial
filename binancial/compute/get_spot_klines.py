@@ -58,7 +58,7 @@ def _aggregate_trades(trades: pd.DataFrame, kline_size: int) -> pd.DataFrame:
     '''Aggregate raw trades into klines.'''
 
     if trades.empty:
-        return pd.DataFrame(columns=KLINE_COLUMNS)
+        return pd.DataFrame(columns=pd.Index(KLINE_COLUMNS))
 
     # Sort by trade_id so first()/last() give open/close (argMin/argMax equivalent)
     trades = trades.sort_values('trade_id')
@@ -173,7 +173,7 @@ def get_spot_klines(client: Any,
                 frames.append(df)
 
     if not frames:
-        return pd.DataFrame(columns=KLINE_COLUMNS)
+        return pd.DataFrame(columns=pd.Index(KLINE_COLUMNS))
 
     trades = pd.concat(frames, ignore_index=True)
     trades = trades.drop_duplicates(subset='trade_id').sort_values('trade_id').reset_index(drop=True)

@@ -24,6 +24,10 @@ class TestGetColnames:
         assert cols[0] == 'trade_id'
         assert cols[-1] == 'buyer_is_maker'
 
+    def test_invalid_raises(self):
+        with pytest.raises(ValueError, match='cols_for must be'):
+            get_colnames('invalid')
+
 
 class TestInitBinanceApi:
     @patch('binance.client.Client')
