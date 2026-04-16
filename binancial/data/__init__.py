@@ -1,5 +1,5 @@
-from .get_klines_historical import get_klines_historical
-from .get_klines_realtime import get_klines_realtime
-from .get_trades_historical import get_trades_historical
-from .get_trades_realtime import get_trades_realtime
-from .get_all_pairs import get_all_pairs
+from .get_all_pairs import get_all_pairs as get_all_pairs
+from .get_klines_historical import get_klines_historical as get_klines_historical
+from .get_klines_realtime import get_klines_realtime as get_klines_realtime
+from .get_trades_historical import get_trades_historical as get_trades_historical
+from .get_trades_realtime import get_trades_realtime as get_trades_realtime

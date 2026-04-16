@@ -1,8 +1,13 @@
-def get_klines_historical(client,
-                          symbol="BTCUSDT",
-                          interval='1h',
-                          start_date=None,
-                          end_date=None):
+from typing import Any
+
+import pandas as pd
+
+
+def get_klines_historical(client: Any,
+                          symbol: str = "BTCUSDT",
+                          interval: str = '1h',
+                          start_date: str | None = None,
+                          end_date: str | None = None) -> pd.DataFrame:
     
     '''Returns historical klines for a given symbol and interval
 
@@ -14,8 +19,9 @@ def get_klines_historical(client,
     
     '''
 
-    import pandas as pd
     import datetime as dt
+
+    import pandas as pd
 
     from ..utils.get_colnames import get_colnames
 

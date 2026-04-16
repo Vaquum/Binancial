@@ -1,0 +1,93 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "binancial"
+version = "0.2.0"
+description = "A Binance API-wrapper that brings all klines and trades data end-points to single-line commands."
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.12"
+authors = [
+    {name = "Mikko Kotila"},
+]
+dependencies = [
+    "python-binance==1.0.28",
+    "pandas==2.2.3",
+    "numpy==1.26.4",
+    "wrangle==0.7.6",
+    "tqdm==4.67.1",
+    "xgboost==2.0.3",
+    "scikit-learn==1.4.1.post1",
+    "nest_asyncio==1.6.0",
+]
+
+[project.urls]
+Repository = "https://github.com/Vaquum/Binancial"
+
+[tool.setuptools.packages.find]
+include = ["binancial*"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "I",
+    "UP",
+    "RUF",
+]
+ignore = [
+    "E501",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**/*.py" = ["S101", "BLE001", "PLR2004", "ANN"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["binancial"]
+
+[tool.pyright]
+pythonVersion = "3.12"
+typeCheckingMode = "strict"
+include = [
+    "binancial",
+]
+exclude = [
+    "binancial/**/tests",
+    "binancial/utils/add_klines_features.py",
+    "scripts",
+]
+reportMissingTypeStubs = false
+reportUnknownMemberType = false
+reportUnknownVariableType = false
+reportUnknownArgumentType = false
+reportUnknownParameterType = false
+reportUnnecessaryIsInstance = false
+
+[tool.pytest.ini_options]
+testpaths = ["binancial"]
+addopts = "-v"
+
+[tool.coverage.run]
+source = ["binancial"]
+omit = [
+    "binancial/features/*",
+    "binancial/strategies/*",
+    "binancial/plots/*",
+    "binancial/data/get_klines_realtime.py",
+    "binancial/data/get_trades_realtime.py",
+    "binancial/utils/add_klines_features.py",
+    "binancial/**/tests/*",
+]
+
+[tool.coverage.report]
+fail_under = 95
+show_missing = true

@@ -1,9 +1,10 @@
-from typing import Any
-from datetime import datetime
 import logging
-import nest_asyncio
-from contextlib import contextmanager
+from datetime import datetime
 from pathlib import Path
+from typing import Any
+
+import nest_asyncio
+
 
 def get_trades_realtime(stream: Any, symbol: str, file_path: str | Path) -> None:
     '''Starts a realtime streaming of trades onto a file.
@@ -79,7 +80,7 @@ def get_trades_realtime(stream: Any, symbol: str, file_path: str | Path) -> None
             
             stream.join()
             
-    except IOError as io_error:
+    except OSError as io_error:
         logger.error(f"File operation failed: {io_error}")
         if socket_id:
             stream.stop_socket(socket_id)

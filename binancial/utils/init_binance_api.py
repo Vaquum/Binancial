@@ -1,4 +1,7 @@
-def init_binance_api(mode, api_key, api_secret):
+from typing import Any
+
+
+def init_binance_api(mode: str, api_key: str, api_secret: str) -> Any:
 
     '''Initializes the binance api client based on the mode specified.
 
