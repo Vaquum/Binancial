@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "binancial"
-version = "0.2.0"
+version = "0.2.1"
 description = "A Binance API-wrapper that brings all klines and trades data end-points to single-line commands."
 readme = "README.md"
 license = {text = "MIT"}
@@ -14,7 +14,7 @@ authors = [
 ]
 dependencies = [
     "python-binance==1.0.28",
-    "pandas==2.2.3",
+    "pandas>=2.2.3,<3",
     "numpy==1.26.4",
     "wrangle==0.7.6",
     "tqdm==4.67.1",

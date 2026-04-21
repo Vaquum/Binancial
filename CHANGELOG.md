@@ -1,5 +1,23 @@
 # Changelog
 
+## 15:23 on 19-03-2024
+
+- Locked all package versions in setup.py and requirements.txt:
+  - python-binance==1.0.28
+  - pandas==2.2.3
+  - numpy==1.26.4
+  - wrangle==0.7.6
+  - tqdm==4.67.1
+  - xgboost==2.0.3
+  - scikit-learn==1.4.1.post1
+
+## 14:45 on 14-08-2024
+
+- Enhanced `get_trades_historical` function to support retrieving any number of trades using ID-based pagination
+  - Added functionality to make multiple API calls when limit exceeds 1000
+  - Maintains backward compatibility with existing implementation
+  - Improved documentation to reflect new capability
+
 ## v0.2.0
 
 - Added `compute` module with `get_spot_klines` — builds 19-column klines from raw trades with OHLC, statistical measures, volume, maker metrics, and liquidity metrics
@@ -18,20 +36,8 @@
 - Added `nest_asyncio` to dependencies
 - 38 tests, 95%+ coverage
 
-## 14:45 on 14-08-2024
+## v0.2.1
 
-- Enhanced `get_trades_historical` function to support retrieving any number of trades using ID-based pagination
-  - Added functionality to make multiple API calls when limit exceeds 1000
-  - Maintains backward compatibility with existing implementation
-  - Improved documentation to reflect new capability
-
-## 15:23 on 19-03-2024
-
-- Locked all package versions in setup.py and requirements.txt:
-  - python-binance==1.0.28
-  - pandas==2.2.3
-  - numpy==1.26.4
-  - wrangle==0.7.6
-  - tqdm==4.67.1
-  - xgboost==2.0.3
-  - scikit-learn==1.4.1.post1
+- Relax the `pandas` dependency from the exact pin `pandas==2.2.3` to `pandas>=2.2.3,<3`. Binancial is used alongside `vaquum-limen` (currently `pandas>=2.3.1`) inside `vaquum-praxis`; with the exact pin, `pip` / `uv` couldn't satisfy both constraints and Praxis's CI dependency resolution was failing. A library-style range lets consumers resolve Binancial and Limen together without code change on either side.
+- Sync runtime `__version__` in `binancial/__init__.py` with `pyproject.toml` (`0.2.0` → `0.2.1`) so both report the same version
+- Reorder CHANGELOG to oldest-first / newest-at-bottom, matching the `vaquum-limen` / `vaquum-nexus` / `vaquum-praxis` convention
