@@ -50,7 +50,7 @@
   - `wrangle==0.7.6` → `wrangle>=0.7.6,<1`
   - `tqdm==4.67.1` → `tqdm>=4.67.0,<5` (floor lowered to match Limen)
   - `xgboost==2.0.3` → `xgboost>=2.0.3,<3`
-  - `scikit-learn==1.4.1.post1` → `scikit-learn>=1.4.1,<2` (Limen's `>=1.6.1` still resolves; `<2` guards against a future 2.x breaking release for consistency with the other caps)
+  - `scikit-learn==1.4.1.post1` → `scikit-learn>=1.4.1.post1,<2` (Limen's `>=1.6.1` still resolves; `<2` guards against a future 2.x breaking release for consistency with the other caps)
   - `nest_asyncio==1.6.0` → `nest_asyncio>=1.6.0,<2`
   - `pandas` was already a range since v0.2.1
 - Bump `__version__` and `pyproject.toml` version to 0.2.2
