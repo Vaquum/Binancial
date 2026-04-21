@@ -35,3 +35,7 @@
   - tqdm==4.67.1
   - xgboost==2.0.3
   - scikit-learn==1.4.1.post1
+
+## v0.2.1
+
+- Relax the `pandas` dependency from the exact pin `pandas==2.2.3` to `pandas>=2.2.3,<3`. Binancial is used alongside `vaquum-limen` (currently `pandas>=2.3.1`) inside `vaquum-praxis`; with the exact pin, `pip` / `uv` couldn't satisfy both constraints and Praxis's CI dependency resolution was failing. A library-style range lets consumers resolve Binancial and Limen together without code change on either side.
