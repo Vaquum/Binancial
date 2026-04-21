@@ -19,7 +19,7 @@ dependencies = [
     "wrangle>=0.7.6,<1",
     "tqdm>=4.67.0,<5",
     "xgboost>=2.0.3,<3",
-    "scikit-learn>=1.4.1",
+    "scikit-learn>=1.4.1,<2",
     "nest_asyncio>=1.6.0,<2",
 ]
 
