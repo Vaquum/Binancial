@@ -1,11 +1,5 @@
 # Changelog
 
-## v0.3.0
-
-- Added `SpotKlineCache` ([`binancial/compute/spot_kline_cache.py`](binancial/compute/spot_kline_cache.py)) — stateful kline cache that pulls only NEW trades since the last cached `trade_id` on every fetch after the initial backfill. Drops per-fetch network cost from hundreds of paginated calls to ~1
-- Added `last_trade_id` parameter to [`get_trades_historical`](binancial/data/get_trades_historical.py); mutually exclusive with `start_date`. Backwards-compatible
-- Added 8 new tests; 49 total, all passing
-
 ## 15:23 on 19-03-2024
 
 - Locked all package versions in setup.py and requirements.txt:
@@ -60,3 +54,9 @@
   - `nest_asyncio==1.6.0` → `nest_asyncio>=1.6.0,<2`
   - `pandas` was already a range since v0.2.1
 - Bump `__version__` and `pyproject.toml` version to 0.2.2
+
+## v0.3.0
+
+- Added `SpotKlineCache` ([`binancial/compute/spot_kline_cache.py`](binancial/compute/spot_kline_cache.py)) — stateful kline cache that pulls only NEW trades since the last cached `trade_id` on every fetch after the initial backfill. Drops per-fetch network cost from hundreds of paginated calls to ~1
+- Added `last_trade_id` parameter to [`get_trades_historical`](binancial/data/get_trades_historical.py); mutually exclusive with `start_date`. Backwards-compatible
+- Added 8 new tests; 49 total, all passing
