@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "binancial"
-version = "0.2.2"
+version = "0.3.0"
 description = "A Binance API-wrapper that brings all klines and trades data end-points to single-line commands."
 readme = "README.md"
 license = {text = "MIT"}

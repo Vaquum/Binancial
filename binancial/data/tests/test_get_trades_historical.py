@@ -191,3 +191,38 @@ def test_get_trades_historical_end_date_stops_pagination(mock_client):
     # batch_1 all within range, batch_2 all filtered -> stops pagination
     assert len(result) == 1000
     assert mock_client.get_historical_trades.call_count == 2
+
+
+def test_get_trades_historical_last_trade_id_skips_resolve(mock_client):
+    """`last_trade_id` bypasses `_resolve_start_id` and starts pagination
+    from `last_trade_id + 1` directly. Caller use case: rolling trade
+    cache pulling only newly-arrived trades since the prior fetch.
+    """
+
+    batch = [_make_trade(2001 + i, 100, 1, 1_700_000_000_000 + i, False) for i in range(3)]
+    mock_client.get_historical_trades.return_value = batch
+
+    result = get_trades_historical(
+        mock_client, last_trade_id=2000, limit=3,
+    )
+
+    # _resolve_start_id (which calls get_aggregate_trades) must NOT be called
+    mock_client.get_aggregate_trades.assert_not_called()
+
+    # First (and only) historical_trades call must use fromId = last_trade_id + 1
+    first_call_kwargs = mock_client.get_historical_trades.call_args_list[0].kwargs
+    assert first_call_kwargs['fromId'] == 2001
+    assert len(result) == 3
+
+
+def test_get_trades_historical_rejects_both_start_date_and_last_trade_id(mock_client):
+    """Mutually exclusive params raise rather than silently picking one."""
+
+    with pytest.raises(ValueError, match='start_date OR last_trade_id'):
+        get_trades_historical(
+            mock_client, start_date='2025-01-01', last_trade_id=42,
+        )
+
+    # Neither client method should have been invoked on the rejection
+    mock_client.get_aggregate_trades.assert_not_called()
+    mock_client.get_historical_trades.assert_not_called()

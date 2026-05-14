@@ -72,7 +72,8 @@ def get_trades_historical(client: Any,
                           symbol: str = "BTCUSDT",
                           limit: int = 1000,
                           start_date: str | None = None,
-                          end_date: str | None = None) -> pd.DataFrame:
+                          end_date: str | None = None,
+                          last_trade_id: int | None = None) -> pd.DataFrame:
 
     '''Returns historical trades for a given symbol
 
@@ -81,10 +82,25 @@ def get_trades_historical(client: Any,
     limit | int | number of trades to fetch (can exceed 1000)
     start_date | str | datetime in 'YYYY-MM-DD' or 'YYYY-MM-DD HH:MM:SS' format
     end_date | str | datetime in 'YYYY-MM-DD' or 'YYYY-MM-DD HH:MM:SS' format
+    last_trade_id | int | resume pagination from `last_trade_id + 1`,
+                          bypassing the `start_date` lookup. Mutually
+                          exclusive with `start_date`. Lets a caller
+                          who already has a rolling trade buffer pull
+                          only the newly-arrived trades since the
+                          previous fetch instead of re-walking the
+                          full history window every cycle
     '''
 
-    # Resolve the starting trade ID from start_date if provided
-    from_id = _resolve_start_id(client, symbol, start_date) if start_date else None
+    if start_date is not None and last_trade_id is not None:
+        raise ValueError('Pass start_date OR last_trade_id, not both')
+
+    # Resolve the starting trade ID from start_date / last_trade_id (or None)
+    if last_trade_id is not None:
+        from_id = last_trade_id + 1
+    elif start_date is not None:
+        from_id = _resolve_start_id(client, symbol, start_date)
+    else:
+        from_id = None
 
     # Resolve end_date to a millisecond timestamp for filtering
     end_ms = _parse_datetime_ms(end_date) if end_date else None
