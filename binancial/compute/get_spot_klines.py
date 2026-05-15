@@ -54,7 +54,7 @@ def _build_chunks(start_date: str, end_date: str, n_chunks: int) -> list[tuple[s
     return chunks
 
 
-def _aggregate_trades(trades: pd.DataFrame, kline_size: int) -> pd.DataFrame:
+def aggregate_trades(trades: pd.DataFrame, kline_size: int) -> pd.DataFrame:
     '''Aggregate raw trades into klines.'''
 
     if trades.empty:
@@ -120,7 +120,7 @@ def _aggregate_trades(trades: pd.DataFrame, kline_size: int) -> pd.DataFrame:
     return df
 
 
-def _drop_partial_kline(df: pd.DataFrame) -> pd.DataFrame:
+def drop_partial_kline(df: pd.DataFrame) -> pd.DataFrame:
     '''Drop the last kline row which may be partial (trades still arriving).'''
     if len(df) > 0:
         return df.iloc[:-1].reset_index(drop=True)
@@ -156,7 +156,7 @@ def get_spot_klines(client: Any,
             client, symbol=symbol, limit=10_000_000,
             start_date=start_date, end_date=end_date,
         )
-        return _drop_partial_kline(_aggregate_trades(trades, kline_size))
+        return drop_partial_kline(aggregate_trades(trades, kline_size))
 
     chunks = _build_chunks(start_date, end_date, workers)
 
@@ -178,4 +178,4 @@ def get_spot_klines(client: Any,
     trades = pd.concat(frames, ignore_index=True)
     trades = trades.drop_duplicates(subset='trade_id').sort_values('trade_id').reset_index(drop=True)
 
-    return _drop_partial_kline(_aggregate_trades(trades, kline_size))
+    return drop_partial_kline(aggregate_trades(trades, kline_size))

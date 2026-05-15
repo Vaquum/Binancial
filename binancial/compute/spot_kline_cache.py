@@ -12,12 +12,12 @@ hundred trades arrived since the previous fetch).
 from __future__ import annotations
 
 import datetime as dt
-from typing import Any
+from typing import Any, cast
 
 import pandas as pd
 
 from ..data import get_trades_historical
-from .get_spot_klines import _aggregate_trades, _drop_partial_kline
+from .get_spot_klines import aggregate_trades, drop_partial_kline
 
 _DATETIME_FMT = '%Y-%m-%d %H:%M:%S'
 _PAGINATION_LIMIT = 10_000_000
@@ -110,7 +110,7 @@ class SpotKlineCache:
                 )
                 self._trim_cache()
 
-        return _drop_partial_kline(_aggregate_trades(self._trades, self._kline_size))
+        return drop_partial_kline(aggregate_trades(self._trades, self._kline_size))
 
     def _trim_cache(self) -> None:
 
@@ -122,6 +122,8 @@ class SpotKlineCache:
         cutoff = self._trades['time'].max() - pd.Timedelta(
             seconds=self._n_rows * self._kline_size,
         )
-        self._trades = self._trades[
-            self._trades['time'] >= cutoff
-        ].reset_index(drop=True)
+        filtered = cast(
+            pd.DataFrame,
+            self._trades[self._trades['time'] >= cutoff],
+        )
+        self._trades = filtered.reset_index(drop=True)

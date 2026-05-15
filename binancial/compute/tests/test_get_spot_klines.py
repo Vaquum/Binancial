@@ -8,9 +8,9 @@ import pytest
 
 from binancial.compute.get_spot_klines import (
     KLINE_COLUMNS,
-    _aggregate_trades,
     _build_chunks,
     _parse_datetime,
+    aggregate_trades,
     get_spot_klines,
 )
 
@@ -71,7 +71,7 @@ class TestParseDatetime:
 
 
 # ---------------------------------------------------------------------------
-# _aggregate_trades
+# aggregate_trades
 # ---------------------------------------------------------------------------
 
 class TestAggregateTrades:
@@ -79,7 +79,7 @@ class TestAggregateTrades:
     def test_empty_input(self):
         empty = pd.DataFrame(columns=['time', 'trade_id', 'price', 'quantity',
                                        'quote_quantity', 'buyer_is_maker'])
-        result = _aggregate_trades(empty, kline_size=1)
+        result = aggregate_trades(empty, kline_size=1)
         assert list(result.columns) == KLINE_COLUMNS
         assert len(result) == 0
 
@@ -94,7 +94,7 @@ class TestAggregateTrades:
             maker_flags=[True, False, True, False],
         )
 
-        result = _aggregate_trades(trades, kline_size=1)
+        result = aggregate_trades(trades, kline_size=1)
 
         assert len(result) == 1
         row = result.iloc[0]
@@ -126,7 +126,7 @@ class TestAggregateTrades:
             maker_flags=[True, True, False, False],
         )
 
-        result = _aggregate_trades(trades, kline_size=1)
+        result = aggregate_trades(trades, kline_size=1)
 
         assert len(result) == 2
         # First bucket
@@ -151,7 +151,7 @@ class TestAggregateTrades:
             maker_flags=[True, False, True],
         )
 
-        result = _aggregate_trades(trades, kline_size=60)
+        result = aggregate_trades(trades, kline_size=60)
         assert len(result) == 1
         assert result.iloc[0]['no_of_trades'] == 3
 
@@ -169,7 +169,7 @@ class TestAggregateTrades:
             maker_flags=[False, False],
         )
 
-        result = _aggregate_trades(trades, kline_size=1)
+        result = aggregate_trades(trades, kline_size=1)
         assert result.iloc[0]['open'] == 111.0   # trade_id 5 (min)
         assert result.iloc[0]['close'] == 999.0  # trade_id 10 (max)
 
@@ -184,7 +184,7 @@ class TestAggregateTrades:
             maker_flags=[True, False, True],
         )
 
-        result = _aggregate_trades(trades, kline_size=1)
+        result = aggregate_trades(trades, kline_size=1)
         row = result.iloc[0]
 
         assert row['open_liquidity'] == pytest.approx(200.0)   # 100 * 2
@@ -208,7 +208,7 @@ class TestAggregateTrades:
             maker_flags=[False, False],
         )
 
-        result = _aggregate_trades(trades, kline_size=1)
+        result = aggregate_trades(trades, kline_size=1)
         assert result.iloc[0]['std'] == pytest.approx(expected_pop_std, abs=1e-6)
         assert result.iloc[0]['std'] != pytest.approx(expected_sample_std, abs=0.1)
 
@@ -223,7 +223,7 @@ class TestAggregateTrades:
             maker_flags=[True],
         )
 
-        result = _aggregate_trades(trades, kline_size=1)
+        result = aggregate_trades(trades, kline_size=1)
         assert list(result.columns) == KLINE_COLUMNS
         assert result['datetime'].dt.tz is not None  # UTC-aware
         assert result['no_of_trades'].dtype == np.int64
