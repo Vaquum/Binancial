@@ -169,3 +169,34 @@ class TestEmptyState:
         cache = SpotKlineCache(client=MagicMock(), kline_size=300, n_rows=100)
         assert cache.last_trade_id is None
         assert cache.cached_trade_count == 0
+
+    def test_empty_first_backfill_re_enters_backfill_on_next_fetch(self):
+        """Pin: if the initial backfill returns an empty DataFrame, the
+        next `fetch()` call must re-enter the start_date backfill path
+        rather than the last_trade_id incremental path (which would
+        crash because the buffer has no rows to read `trade_id` from).
+        """
+
+        client = MagicMock()
+        cache = SpotKlineCache(client, kline_size=300, n_rows=100)
+
+        with patch(
+            'binancial.compute.spot_kline_cache.get_trades_historical',
+        ) as mock_fetch:
+            mock_fetch.side_effect = [
+                pd.DataFrame(),
+                _make_trades_df(start_id=2000, count=4),
+            ]
+            cache.fetch()
+            assert cache.cached_trade_count == 0
+            assert cache.last_trade_id is None
+
+            cache.fetch()
+
+        assert mock_fetch.call_count == 2
+        # Second call must use the start_date path again, NOT last_trade_id
+        second_kwargs = mock_fetch.call_args_list[1].kwargs
+        assert 'start_date' in second_kwargs
+        assert second_kwargs.get('last_trade_id') is None
+        assert cache.cached_trade_count == 4
+        assert cache.last_trade_id == 2003

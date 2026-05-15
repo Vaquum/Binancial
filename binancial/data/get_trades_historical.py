@@ -84,11 +84,16 @@ def get_trades_historical(client: Any,
     end_date | str | datetime in 'YYYY-MM-DD' or 'YYYY-MM-DD HH:MM:SS' format
     last_trade_id | int | resume pagination from `last_trade_id + 1`,
                           bypassing the `start_date` lookup. Mutually
-                          exclusive with `start_date`. Lets a caller
-                          who already has a rolling trade buffer pull
-                          only the newly-arrived trades since the
-                          previous fetch instead of re-walking the
-                          full history window every cycle
+                          exclusive with `start_date` (passing both
+                          raises `ValueError`); composes with `end_date`
+                          (pagination starts from `last_trade_id + 1`
+                          and stops on the first trade past `end_ms`,
+                          same as the `start_date` + `end_date` path).
+                          Lets a caller who already has a rolling
+                          trade buffer pull only the newly-arrived
+                          trades since the previous fetch instead of
+                          re-walking the full history window every
+                          cycle
     '''
 
     if start_date is not None and last_trade_id is not None:

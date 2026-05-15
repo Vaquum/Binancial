@@ -77,8 +77,11 @@ class SpotKlineCache:
         `start_date` path. On every subsequent call, pulls only trades
         with `trade_id > self.last_trade_id` via the new
         `last_trade_id` path. The buffer is trimmed back to the
-        `n_rows * kline_size` time window after each append, so memory
-        stays bounded.
+        `n_rows * kline_size` time window after every fetch (including
+        the initial backfill, which can overshoot when
+        `_resolve_start_id` snaps to the first trade at-or-after the
+        cutoff and pagination pulls a final batch past the window),
+        so memory stays bounded from the first call onward.
 
         Returns:
             pd.DataFrame: 19-column klines aggregated from the current
@@ -108,7 +111,8 @@ class SpotKlineCache:
                 self._trades = pd.concat(
                     [self._trades, new_trades], ignore_index=True,
                 )
-                self._trim_cache()
+
+        self._trim_cache()
 
         return drop_partial_kline(aggregate_trades(self._trades, self._kline_size))
 
